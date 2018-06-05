@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>A paint program</title>
+    <script src="paint.js"></script>
+
+    <script>
+        function drawRectangle(a, b) {
+            return {left: Math.min(a.x, b.x),
+                top: Math.min(a.y, b.y),
+                width: Math.abs(a.x - b.x),
+                height: Math.abs(a.y - b.y)};
+        }
+
+        tools.Rectangle = function(event, cx) {
+            var start = relativePos(event, cx.canvas);
+            var pageStart = {x: event.pageX, y: event.pageY};
+
+            var tracker = document.createElement("div");
+            tracker.style.position = "absolute";
+            tracker.style.background = cx.fillStyle;
+            document.body.appendChild(tracker);
+
+            trackDrag(function(event) {
+                var rect = drawRectangle(pageStart,
+                    {x: event.pageX, y: event.pageY});
+                tracker.style.left = rect.left + "px";
+                tracker.style.top = rect.top + "px";
+                tracker.style.width = rect.width + "px";
+                tracker.style.height = rect.height + "px";
+            }, function(event) {
+                var rect = drawRectangle(start,
+                    relativePos(event, cx.canvas));
+                cx.fillRect(rect.left, rect.top, rect.width, rect.height);
+                document.body.removeChild(tracker);
+            });
+        };
+    </script>
+
+</head>
+<body>
+<h2>Paint</h2>
+
+    <script>
+        createPaint(document.body);
+    </script>
+
+</body>
+</html>
